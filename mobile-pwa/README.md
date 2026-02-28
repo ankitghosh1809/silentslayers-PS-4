@@ -1,1 +1,0 @@
-# Mobile PWA - Person C
