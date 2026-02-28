@@ -63,3 +63,11 @@ app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📡 API available at http://localhost:${PORT}/api`);
 });
+
+// New routes
+import issueRoutes from './routes/issueRoutes.js';
+import aggregatorRoutes from './routes/aggregatorRoutes.js';
+
+// Add after existing routes
+app.use('/api', issueRoutes);
+app.use('/api', aggregatorRoutes);

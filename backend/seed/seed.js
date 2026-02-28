@@ -4,17 +4,17 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-// Get the directory name (equivalent to __dirname in CommonJS)
+// Get the directory name
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Load environment variables from the .env file in the parent directory
+// Load environment variables
 dotenv.config({ path: path.join(__dirname, '../.env') });
 
-// Import models
-import Branch from '../models/branch.model.js';
-import Staff from '../models/staff.model.js';
-import Review from '../models/review.model.js';
+// Import models with CORRECT filenames
+import Branch from '../models/Branch.js';
+import Staff from '../models/Staff.js';
+import Review from '../models/Review.js';
 
 const seedDatabase = async () => {
   try {
@@ -22,7 +22,7 @@ const seedDatabase = async () => {
     await mongoose.connect(process.env.MONGO_URI);
     console.log('✅ Connected to MongoDB for seeding...');
 
-    // Clear existing data (optional - comment out if you want to keep existing data)
+    // Clear existing data
     await Branch.deleteMany({});
     await Staff.deleteMany({});
     await Review.deleteMany({});
@@ -31,204 +31,163 @@ const seedDatabase = async () => {
     // Seed branches
     const branches = await Branch.insertMany([
       {
-        name: 'Main Branch - Downtown',
+        name: 'Downtown',
         location: '123 Main Street, Downtown',
         manager: 'John Smith'
       },
       {
-        name: 'North Branch - Uptown',
+        name: 'Uptown',
         location: '456 North Avenue, Uptown',
         manager: 'Sarah Johnson'
       },
       {
-        name: 'South Branch - Suburbs',
+        name: 'Suburbs',
         location: '789 South Road, Suburbs',
         manager: 'Michael Brown'
       },
       {
-        name: 'East Branch - Riverside',
+        name: 'Riverside',
         location: '321 East Drive, Riverside',
         manager: 'Emily Davis'
       },
       {
-        name: 'West Branch - Business District',
+        name: 'Business District',
         location: '654 West Boulevard, Business District',
         manager: 'David Wilson'
       }
     ]);
     console.log(`✅ Seeded ${branches.length} branches`);
 
-    // Seed staff members for each branch
+    // Staff data for each branch
     const staffMembers = [];
     
-    // Staff for Main Branch (branch[0])
+    // Staff for Downtown (branch[0])
     staffMembers.push(
-      {
-        name: 'Alice Cooper',
-        branchId: branches[0]._id,
-        role: 'Manager'
-      },
-      {
-        name: 'Bob Martin',
-        branchId: branches[0]._id,
-        role: 'Chef'
-      },
-      {
-        name: 'Carol White',
-        branchId: branches[0]._id,
-        role: 'Server'
-      },
-      {
-        name: 'Dave Black',
-        branchId: branches[0]._id,
-        role: 'Server'
-      },
-      {
-        name: 'Eve Green',
-        branchId: branches[0]._id,
-        role: 'Host'
-      }
+      { name: 'Alice Cooper', branchId: branches[0]._id, role: 'Manager' },
+      { name: 'Bob Martin', branchId: branches[0]._id, role: 'Chef' },
+      { name: 'Carol White', branchId: branches[0]._id, role: 'Server' },
+      { name: 'Dave Black', branchId: branches[0]._id, role: 'Server' },
+      { name: 'Eve Green', branchId: branches[0]._id, role: 'Host' }
     );
 
-    // Staff for North Branch (branch[1])
+    // Staff for Uptown (branch[1])
     staffMembers.push(
-      {
-        name: 'Frank Harris',
-        branchId: branches[1]._id,
-        role: 'Manager'
-      },
-      {
-        name: 'Grace Lee',
-        branchId: branches[1]._id,
-        role: 'Chef'
-      },
-      {
-        name: 'Henry Clark',
-        branchId: branches[1]._id,
-        role: 'Server'
-      },
-      {
-        name: 'Ivy Walker',
-        branchId: branches[1]._id,
-        role: 'Server'
-      }
+      { name: 'Frank Harris', branchId: branches[1]._id, role: 'Manager' },
+      { name: 'Grace Lee', branchId: branches[1]._id, role: 'Chef' },
+      { name: 'Henry Clark', branchId: branches[1]._id, role: 'Server' },
+      { name: 'Ivy Walker', branchId: branches[1]._id, role: 'Server' }
     );
 
-    // Staff for South Branch (branch[2])
+    // Staff for Suburbs (branch[2])
     staffMembers.push(
-      {
-        name: 'Jack Taylor',
-        branchId: branches[2]._id,
-        role: 'Manager'
-      },
-      {
-        name: 'Kelly Adams',
-        branchId: branches[2]._id,
-        role: 'Chef'
-      },
-      {
-        name: 'Leo Scott',
-        branchId: branches[2]._id,
-        role: 'Server'
-      }
+      { name: 'Jack Taylor', branchId: branches[2]._id, role: 'Manager' },
+      { name: 'Kelly Adams', branchId: branches[2]._id, role: 'Chef' },
+      { name: 'Leo Scott', branchId: branches[2]._id, role: 'Server' }
     );
 
-    // Staff for East Branch (branch[3])
+    // Staff for Riverside (branch[3])
     staffMembers.push(
-      {
-        name: 'Mia Phillips',
-        branchId: branches[3]._id,
-        role: 'Manager'
-      },
-      {
-        name: 'Noah Campbell',
-        branchId: branches[3]._id,
-        role: 'Chef'
-      },
-      {
-        name: 'Olivia Parker',
-        branchId: branches[3]._id,
-        role: 'Server'
-      },
-      {
-        name: 'Peter Evans',
-        branchId: branches[3]._id,
-        role: 'Server'
-      }
+      { name: 'Mia Phillips', branchId: branches[3]._id, role: 'Manager' },
+      { name: 'Noah Campbell', branchId: branches[3]._id, role: 'Chef' },
+      { name: 'Olivia Parker', branchId: branches[3]._id, role: 'Server' },
+      { name: 'Peter Evans', branchId: branches[3]._id, role: 'Server' }
     );
 
-    // Staff for West Branch (branch[4])
+    // Staff for Business District (branch[4])
     staffMembers.push(
-      {
-        name: 'Quinn Edwards',
-        branchId: branches[4]._id,
-        role: 'Manager'
-      },
-      {
-        name: 'Rachel Collins',
-        branchId: branches[4]._id,
-        role: 'Chef'
-      },
-      {
-        name: 'Sam Stewart',
-        branchId: branches[4]._id,
-        role: 'Server'
-      }
+      { name: 'Quinn Edwards', branchId: branches[4]._id, role: 'Manager' },
+      { name: 'Rachel Collins', branchId: branches[4]._id, role: 'Chef' },
+      { name: 'Sam Stewart', branchId: branches[4]._id, role: 'Server' }
     );
 
     const staff = await Staff.insertMany(staffMembers);
     console.log(`✅ Seeded ${staff.length} staff members`);
 
-    // Seed sample reviews
-    const reviews = [];
-    
-    // Helper function to get random items
-    const getRandomCategories = () => {
-      const allCategories = ['Food', 'Service', 'Ambience', 'Staff Behavior', 'Cleanliness', 'Value', 'Wait Time'];
-      const numCategories = Math.floor(Math.random() * 3) + 1; // 1 to 3 categories
-      const shuffled = [...allCategories].sort(() => 0.5 - Math.random());
-      return shuffled.slice(0, numCategories);
-    };
+    // Sample comments for reviews
+    const sampleComments = [
+      { rating: 5, text: 'Amazing food and excellent service! The staff was very friendly and the ambiance was perfect.' },
+      { rating: 5, text: 'Best restaurant in town! The food is always fresh and delicious.' },
+      { rating: 5, text: 'Outstanding experience! Will definitely come back.' },
+      { rating: 4, text: 'Great experience overall. Food was tasty and service was good.' },
+      { rating: 4, text: 'Nice ambiance and polite staff. Will visit again.' },
+      { rating: 4, text: 'Very good food, slightly expensive but worth it.' },
+      { rating: 3, text: 'Average food. Service was okay but a bit slow.' },
+      { rating: 3, text: 'Nothing special. Just an ordinary experience.' },
+      { rating: 3, text: 'Decent place, food could be better.' },
+      { rating: 2, text: 'Food was cold and service was slow. Disappointed.' },
+      { rating: 2, text: 'Not worth the price. The staff seemed uninterested.' },
+      { rating: 2, text: 'Below average experience. Need improvement.' },
+      { rating: 1, text: 'Terrible experience! Food was bad and staff was rude.' },
+      { rating: 1, text: 'Very dirty tables and long wait time. Never coming back.' },
+      { rating: 1, text: 'Worst restaurant ever! Avoid at all costs.' }
+    ];
 
-    const getSentimentFromRating = (rating) => {
+    // Helper function to get sentiment from rating
+    const getSentiment = (rating) => {
       if (rating >= 4) return 'positive';
       if (rating === 3) return 'neutral';
       return 'negative';
     };
 
-    // Generate 20 sample reviews
-    for (let i = 0; i < 20; i++) {
+    // Helper function to detect categories
+    const detectCategories = (comment) => {
+      const categories = [];
+      const lowerComment = comment.toLowerCase();
+      
+      const keywords = {
+        Food: ['food', 'taste', 'delicious', 'meal', 'dish', 'menu', 'appetizer', 'dessert'],
+        Service: ['service', 'waiter', 'server', 'attentive', 'slow', 'fast'],
+        Ambience: ['ambience', 'atmosphere', 'music', 'lighting', 'decor', 'vibe'],
+        Cleanliness: ['clean', 'dirty', 'hygiene', 'table', 'floor'],
+        'Staff Behavior': ['rude', 'friendly', 'polite', 'helpful', 'behavior', 'attitude'],
+        Value: ['price', 'expensive', 'cheap', 'worth', 'value', 'cost'],
+        'Wait Time': ['wait', 'time', 'delay', 'quick', 'slow', 'long']
+      };
+
+      Object.entries(keywords).forEach(([category, words]) => {
+        if (words.some(word => lowerComment.includes(word))) {
+          categories.push(category);
+        }
+      });
+
+      if (categories.length === 0) categories.push('General');
+      return [...new Set(categories)];
+    };
+
+    // Generate 50 reviews with random dates
+    const reviews = [];
+    const now = new Date();
+
+    for (let i = 0; i < 50; i++) {
       const randomBranch = branches[Math.floor(Math.random() * branches.length)];
       const branchStaff = staff.filter(s => s.branchId.toString() === randomBranch._id.toString());
       
       if (branchStaff.length > 0) {
         const randomStaff = branchStaff[Math.floor(Math.random() * branchStaff.length)];
-        const rating = Math.floor(Math.random() * 5) + 1; // 1-5
-        const categories = getRandomCategories();
-        const sentiment = getSentimentFromRating(rating);
+        const randomComment = sampleComments[Math.floor(Math.random() * sampleComments.length)];
         
-        // Sample comments based on rating
-        let comment = '';
-        if (rating === 5) comment = 'Excellent experience! The service was outstanding and the food was delicious.';
-        else if (rating === 4) comment = 'Very good overall. Great service and nice ambiance.';
-        else if (rating === 3) comment = 'Average experience. Some things were good, others need improvement.';
-        else if (rating === 2) comment = 'Disappointing. Service was slow and food was below expectations.';
-        else comment = 'Very poor experience. Would not recommend.';
+        // Random date within last 90 days
+        const randomDays = Math.floor(Math.random() * 90);
+        const randomDate = new Date(now);
+        randomDate.setDate(randomDate.getDate() - randomDays);
+
+        const categories = detectCategories(randomComment.text);
+        const sentiment = getSentiment(randomComment.rating);
         
-        // Random replies for some reviews
-        let reply = '';
-        if (Math.random() > 0.5) {
-          reply = 'Thank you for your feedback. We appreciate your input and will work on improving.';
-        }
+        // Random replies (50% chance)
+        const reply = Math.random() > 0.5 
+          ? 'Thank you for your feedback! We appreciate your input and hope to see you again soon.' 
+          : '';
 
         reviews.push({
-          rating,
-          comment,
+          rating: randomComment.rating,
+          comment: randomComment.text,
           categories,
           sentiment,
           branchId: randomBranch._id,
           staffId: randomStaff._id,
-          reply
+          reply,
+          createdAt: randomDate
         });
       }
     }
@@ -237,7 +196,7 @@ const seedDatabase = async () => {
     console.log(`✅ Seeded ${insertedReviews.length} sample reviews`);
 
     console.log('\n🎉 Database seeding completed successfully!');
-    console.log('\nSummary:');
+    console.log('\n📊 Summary:');
     console.log(`- Branches: ${branches.length}`);
     console.log(`- Staff: ${staff.length}`);
     console.log(`- Reviews: ${insertedReviews.length}`);
@@ -255,5 +214,3 @@ const seedDatabase = async () => {
 
 // Run the seed function
 seedDatabase();
-
-
