@@ -32,6 +32,9 @@ const scrollMessages = [
 export default function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [businessName, setBusinessName] = useState("");
+    const [branchCount, setBranchCount] = useState("1");
+    const [role, setRole] = useState("Owner");
     const [loading, setLoading] = useState(false);
     const [booting, setBooting] = useState(false);
     const router = useRouter();
@@ -46,16 +49,11 @@ export default function LoginPage() {
         e.preventDefault();
         setLoading(true);
         try {
-            await signInWithEmailAndPassword(auth, email, password);
+            // Simulated login for demo
             triggerBootingSequence();
         } catch (error) {
             console.error(error);
-            // Fallback for demo users
-            if ((email === "admin@reviewflow.com" || email === "owner@urbanbites.com") && password === "demo123") {
-                triggerBootingSequence();
-            } else {
-                setLoading(false);
-            }
+            setLoading(false);
         }
     };
 
@@ -98,7 +96,7 @@ export default function LoginPage() {
                             />
                         </div>
 
-                        <p className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.4em] animate-pulse">Booting Intelligence Engine...</p>
+                        <p className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.4em] animate-pulse">Initializing ReviewFlow Intelligence...</p>
                     </motion.div>
                 )}
             </AnimatePresence>
@@ -133,17 +131,44 @@ export default function LoginPage() {
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black text-indigo-400 uppercase tracking-widest ml-1">Security Key</label>
+                        <label className="text-[10px] font-black text-indigo-400 uppercase tracking-widest ml-1">Business Name</label>
                         <div className="relative group">
-                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within:text-indigo-400 transition-colors" />
+                            <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within:text-indigo-400 transition-colors" />
                             <input
-                                type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
+                                type="text"
+                                value={businessName}
+                                onChange={(e) => setBusinessName(e.target.value)}
                                 className="w-full bg-slate-900 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-muted-foreground placeholder:italic outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/30 transition-all font-medium italic"
-                                placeholder="••••••••"
+                                placeholder="e.g. Urban Bites"
                                 required
                             />
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black text-indigo-400 uppercase tracking-widest ml-1">Branch count</label>
+                            <select
+                                value={branchCount}
+                                onChange={(e) => setBranchCount(e.target.value)}
+                                className="w-full bg-slate-900 border border-white/10 rounded-2xl py-4 px-4 text-white outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/30 transition-all font-medium italic appearance-none"
+                            >
+                                <option>1-5</option>
+                                <option>6-20</option>
+                                <option>20+</option>
+                            </select>
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black text-indigo-400 uppercase tracking-widest ml-1">Your Role</label>
+                            <select
+                                value={role}
+                                onChange={(e) => setRole(e.target.value)}
+                                className="w-full bg-slate-900 border border-white/10 rounded-2xl py-4 px-4 text-white outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/30 transition-all font-medium italic appearance-none"
+                            >
+                                <option>Owner</option>
+                                <option>Branch Manager</option>
+                                <option>Marketer</option>
+                            </select>
                         </div>
                     </div>
 
@@ -152,7 +177,7 @@ export default function LoginPage() {
                         disabled={loading}
                         className="w-full bg-white text-slate-950 py-4 rounded-2xl font-black uppercase italic tracking-widest text-sm hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 shadow-xl"
                     >
-                        {loading ? "Verifying Credentials..." : "Sign In to Suite"}
+                        {loading ? "Verifying Credentials..." : "Initialize Dashboard"}
                         {!loading && <ArrowRight className="w-5 h-5" />}
                     </button>
 

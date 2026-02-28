@@ -14,31 +14,53 @@ import {
     ArrowUpRight,
     TrendingDown,
     ChevronRight,
-    Zap
+    Zap,
+    Users,
+    User
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 
-const radarData = [
-    { subject: 'Food', A: 120, B: 110, fullMark: 150 },
-    { subject: 'Service', A: 98, B: 130, fullMark: 150 },
-    { subject: 'Ambience', A: 86, B: 130, fullMark: 150 },
-    { subject: 'Value', A: 99, B: 100, fullMark: 150 },
-    { subject: 'Hygiene', A: 85, B: 90, fullMark: 150 },
-    { subject: 'Pricing', A: 65, B: 85, fullMark: 150 },
-];
+const data7Days = {
+    radar: [
+        { subject: 'Food', A: 120, B: 110, fullMark: 150 },
+        { subject: 'Service', A: 98, B: 130, fullMark: 150 },
+        { subject: 'Ambience', A: 86, B: 130, fullMark: 150 },
+        { subject: 'Value', A: 99, B: 100, fullMark: 150 },
+        { subject: 'Hygiene', A: 85, B: 90, fullMark: 150 },
+        { subject: 'Pricing', A: 65, B: 85, fullMark: 150 },
+    ],
+    benchmark: [
+        { metric: 'Food Quality', you: 4.8, competition: 4.2 },
+        { metric: 'Service Speed', you: 3.9, competition: 4.5 },
+        { metric: 'Ambience', you: 4.9, competition: 4.1 },
+        { metric: 'Hygiene', you: 4.7, competition: 4.0 },
+        { metric: 'Pricing', you: 4.2, competition: 4.8 },
+    ]
+};
 
-const benchmarkData = [
-    { metric: 'Food Quality', you: 4.8, competition: 4.2 },
-    { metric: 'Service Speed', you: 3.9, competition: 4.5 },
-    { metric: 'Ambience', you: 4.9, competition: 4.1 },
-    { metric: 'Hygiene', you: 4.7, competition: 4.0 },
-    { metric: 'Pricing', you: 4.2, competition: 4.8 },
-];
+const data30Days = {
+    radar: [
+        { subject: 'Food', A: 110, B: 115, fullMark: 150 },
+        { subject: 'Service', A: 105, B: 125, fullMark: 150 },
+        { subject: 'Ambience', A: 92, B: 120, fullMark: 150 },
+        { subject: 'Value', A: 95, B: 105, fullMark: 150 },
+        { subject: 'Hygiene', A: 88, B: 85, fullMark: 150 },
+        { subject: 'Pricing', A: 70, B: 80, fullMark: 150 },
+    ],
+    benchmark: [
+        { metric: 'Food Quality', you: 4.5, competition: 4.4 },
+        { metric: 'Service Speed', you: 4.1, competition: 4.3 },
+        { metric: 'Ambience', you: 4.7, competition: 4.2 },
+        { metric: 'Hygiene', you: 4.6, competition: 4.1 },
+        { metric: 'Pricing', you: 4.0, competition: 4.6 },
+    ]
+};
 
 export default function CompetitorPage() {
     const [period, setPeriod] = useState("Last 7 days");
+    const activeData = period === "Last 7 days" ? data7Days : data30Days;
 
     return (
         <div className="flex gap-6 min-h-[calc(100vh-2rem)] bg-slate-950 p-4">
@@ -94,11 +116,11 @@ export default function CompetitorPage() {
 
                         <div className="h-[400px] w-full">
                             <ResponsiveContainer width="100%" height="100%">
-                                <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
+                                <RadarChart cx="50%" cy="50%" outerRadius="80%" data={activeData.radar}>
                                     <PolarGrid stroke="rgba(255,255,255,0.05)" />
                                     <PolarAngleAxis
                                         dataKey="subject"
-                                        tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10, fontWeight: 900, textTransform: 'uppercase' }}
+                                        tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10, fontWeight: 900 }}
                                     />
                                     <PolarRadiusAxis angle={30} domain={[0, 150]} hide />
                                     <Radar
@@ -151,7 +173,7 @@ export default function CompetitorPage() {
                                 <TrendingUp className="w-6 h-6 text-emerald-400" />
                             </div>
                             <div className="space-y-6">
-                                {benchmarkData.map((d, i) => (
+                                {activeData.benchmark.map((d, i) => (
                                     <div key={i} className="group cursor-pointer">
                                         <div className="flex justify-between items-end mb-3">
                                             <p className="text-xs font-black text-white uppercase italic tracking-tight">{d.metric}</p>

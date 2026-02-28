@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
+import { cn } from "@/lib/utils";
 
 interface Message {
     role: 'user' | 'assistant';
@@ -56,25 +57,21 @@ export default function AIAssistantPage() {
 
         try {
             // Integrate with real Gemini via your internal API
-            // Note: In an enterprise demo, we'd pass the conversation history
             const response = await axios.post("/api/ai/chat", { prompt: input });
 
             const botMsg: Message = {
                 role: 'assistant',
-                content: response.data.answer || "I've analyzed your request and updated the insights panel.",
+                content: response.data.answer || "AI temporarily in demo mode.",
                 time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             };
             setMessages(prev => [...prev, botMsg]);
         } catch (error) {
             console.error(error);
-            // Fallback for demo
-            setTimeout(() => {
-                setMessages(prev => [...prev, {
-                    role: 'assistant',
-                    content: "Based on the data from Midtown Express, ratings are dropping primarily due to 'Wait Time' and 'Service Speed' mentioned in Swiggy reviews. Would you like me to generate an escalation report for the branch manager?",
-                    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                }]);
-            }, 1500);
+            setMessages(prev => [...prev, {
+                role: 'assistant',
+                content: "AI temporarily in demo mode.",
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            }]);
         } finally {
             setIsTyping(false);
         }
