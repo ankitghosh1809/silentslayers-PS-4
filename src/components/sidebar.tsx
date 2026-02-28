@@ -24,19 +24,19 @@ import { useAuth } from "./auth-provider";
 
 export function Sidebar() {
     const pathname = usePathname();
-    const { role } = useAuth();
+    const { role, businessName, logout } = useAuth();
 
     const navItems = [
         { label: "Dashboard", id: "dashboard", icon: LayoutDashboard, href: "/dashboard" },
         { label: "AI Assistant", id: "ai-assistant", icon: Sparkles, href: "/ai-assistant" },
         { label: "Escalations", id: "escalations", icon: ShieldAlert, href: "/escalations", chip: "Live" },
-        { label: "Reviews Feed", id: "reviews", icon: MessageSquare, href: "/reviews", hidden: role === "MANAGER" },
+        { label: "Reviews Feed", id: "reviews", icon: MessageSquare, href: "/reviews", hidden: ["MANAGER"].includes(role) },
         { label: "Staff Stats", id: "staff", icon: Users, href: "/staff" },
-        { label: "Branches", id: "branches", icon: Building2, href: "/branches", hidden: role === "MANAGER" },
+        { label: "Branches", id: "branches", icon: Building2, href: "/branches", hidden: ["MANAGER"].includes(role) },
         { label: "Competitors", id: "competitor", icon: Target, href: "/competitor" },
         { label: "Collect Feedback", id: "collect", icon: QrCode, href: "/collect" },
-        { label: "Insights", id: "insights", icon: Zap, href: "/insights", hidden: role === "MANAGER" },
-        { label: "Integrations", id: "integrations", icon: Globe, href: "/integrations", hidden: role === "MANAGER" },
+        { label: "Insights", id: "insights", icon: Zap, href: "/insights", hidden: ["MANAGER"].includes(role) },
+        { label: "Integrations", id: "integrations", icon: Globe, href: "/integrations", hidden: ["MANAGER"].includes(role) },
         { label: "Settings", id: "settings", icon: Settings, href: "/settings" },
     ].filter(item => !item.hidden);
 
@@ -64,7 +64,7 @@ export function Sidebar() {
                 </div>
                 <div className="flex flex-col">
                     <span className="text-2xl font-black text-white italic tracking-tighter leading-none italic">ReviewFlow</span>
-                    <span className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mt-1">Enterprise Suite</span>
+                    <span className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mt-1 truncate max-w-[150px]">{businessName || "Enterprise Suite"}</span>
                 </div>
             </Link>
 
@@ -121,14 +121,17 @@ export function Sidebar() {
                     <div className="p-4 flex items-center justify-between">
                         <div className="flex items-center gap-4">
                             <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-slate-800 to-slate-900 border border-white/10 flex items-center justify-center text-xl font-black text-white italic">
-                                {role === "ADMIN" ? "A" : "M"}
+                                {role[0]}
                             </div>
                             <div className="flex flex-col">
-                                <span className="text-xs font-black text-white uppercase italic">{role === "ADMIN" ? "Admin" : "Manager"}</span>
+                                <span className="text-xs font-black text-white uppercase italic">{role}</span>
                                 <span className="text-[9px] font-bold text-indigo-400 uppercase tracking-tighter">Premium Cluster</span>
                             </div>
                         </div>
-                        <button className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-rose-500/20 group transition-all">
+                        <button
+                            onClick={logout}
+                            className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-rose-500/20 group transition-all"
+                        >
                             <LogOut className="w-4 h-4 text-muted-foreground group-hover:text-rose-500" />
                         </button>
                     </div>

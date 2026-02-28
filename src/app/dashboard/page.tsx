@@ -24,7 +24,7 @@ import {
 } from 'recharts';
 import { motion } from "framer-motion";
 
-const sentimentData = [
+const sentimentDataDaily = [
     { name: 'Mon', positive: 85, neutral: 10, negative: 5 },
     { name: 'Tue', positive: 78, neutral: 15, negative: 7 },
     { name: 'Wed', positive: 92, neutral: 5, negative: 3 },
@@ -32,6 +32,13 @@ const sentimentData = [
     { name: 'Fri', positive: 95, neutral: 3, negative: 2 },
     { name: 'Sat', positive: 90, neutral: 6, negative: 4 },
     { name: 'Sun', positive: 82, neutral: 12, negative: 6 },
+];
+
+const sentimentDataWeekly = [
+    { name: 'Week 1', positive: 75, neutral: 15, negative: 10 },
+    { name: 'Week 2', positive: 82, neutral: 10, negative: 8 },
+    { name: 'Week 3', positive: 90, neutral: 6, negative: 4 },
+    { name: 'Week 4', positive: 94, neutral: 4, negative: 2 },
 ];
 
 const categoryData = [
@@ -49,13 +56,27 @@ const branchData = [
     { name: 'Riverside', rating: 4.4 },
 ];
 
+import { AnimatePresence } from "framer-motion";
+import { X, FileText, Download, CheckCircle, BrainCircuit } from "lucide-react";
+
 export default function DashboardPage() {
     const [loading, setLoading] = useState(true);
+    const [timeframe, setTimeframe] = useState<"daily" | "weekly">("daily");
+    const [showSummary, setShowSummary] = useState(false);
+    const [exporting, setExporting] = useState(false);
 
     useEffect(() => {
         const timer = setTimeout(() => setLoading(false), 1500);
         return () => clearTimeout(timer);
     }, []);
+
+    const handleExport = () => {
+        setExporting(true);
+        setTimeout(() => {
+            setExporting(false);
+            alert("Executive Report exported successfully as PDF.");
+        }, 2000);
+    };
 
     if (loading) {
         return (
@@ -86,7 +107,55 @@ export default function DashboardPage() {
         <div className="flex gap-6 min-h-[calc(100vh-2rem)] bg-slate-950 p-4">
             <Sidebar />
 
-            <div className="flex-1 space-y-8 max-h-[calc(100vh-2rem)] overflow-y-auto pr-2 custom-scrollbar">
+            <AnimatePresence>
+                {showSummary && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-sm"
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                            className="glass max-w-2xl w-full p-10 rounded-[3rem] border-white/10 shadow-2xl relative"
+                        >
+                            <button
+                                onClick={() => setShowSummary(false)}
+                                className="absolute top-8 right-8 p-2 hover:bg-white/5 rounded-full transition-all"
+                            >
+                                <X className="w-6 h-6 text-muted-foreground" />
+                            </button>
+
+                            <div className="flex items-center gap-4 mb-8">
+                                <div className="w-14 h-14 rounded-2xl bg-indigo-500/20 flex items-center justify-center">
+                                    <BrainCircuit className="w-8 h-8 text-indigo-400" />
+                                </div>
+                                <h3 className="text-3xl font-black text-white italic uppercase tracking-tighter italic">AI Weekly Summary</h3>
+                            </div>
+
+                            <div className="space-y-6 text-white/70 italic font-medium leading-relaxed">
+                                <p>Overall sentiment has trended upward by <span className="text-emerald-400 font-black">12.5%</span> this week, largely driven by the successful launch of the "Summer Specials" menu at <span className="text-white">Downtown Branch</span>.</p>
+                                <p><span className="text-indigo-400 font-black">Key Insight:</span> Customer feedback mentions "Wait Times" 34% less often than last week after the new floor supervisor deployment.</p>
+                                <div className="p-6 bg-white/5 rounded-2xl border-white/5 space-y-3 font-bold italic">
+                                    <p className="text-xs text-indigo-400 uppercase tracking-widest">Action Recommendation:</p>
+                                    <p className="text-sm">Implement staff recognition program at Harbor Grill to boost service speed metrics, which currently lag by 4% behind Midtown.</p>
+                                </div>
+                            </div>
+
+                            <button
+                                onClick={() => setShowSummary(false)}
+                                className="w-full mt-10 bg-white text-slate-950 py-4 rounded-2xl font-black uppercase italic tracking-widest text-sm hover:scale-[1.02] active:scale-[0.98] transition-all"
+                            >
+                                Done
+                            </button>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            <div className="flex-1 space-y-8 max-h-[calc(100vh-2rem)] overflow-y-auto pr-2 custom-scrollbar no-scrollbar">
                 {/* Header */}
                 <div className="flex justify-between items-end">
                     <div>
@@ -102,11 +171,20 @@ export default function DashboardPage() {
                         <p className="text-muted-foreground font-medium italic mt-2">Real-time performance across 5 premium locations.</p>
                     </div>
                     <div className="flex gap-3">
-                        <button className="glass px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white hover:bg-white/10 transition-all">
+                        <button
+                            onClick={() => setShowSummary(true)}
+                            className="glass px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white hover:bg-white/10 transition-all flex items-center gap-2"
+                        >
+                            <FileText className="w-4 h-4 text-indigo-400" />
                             Weekly Summary
                         </button>
-                        <button className="bg-gradient-to-tr from-indigo-500 to-indigo-700 hover:from-indigo-400 hover:to-indigo-600 text-white px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-xl shadow-indigo-500/20">
-                            Export PDF
+                        <button
+                            onClick={handleExport}
+                            disabled={exporting}
+                            className="bg-gradient-to-tr from-indigo-500 to-indigo-700 hover:from-indigo-400 hover:to-indigo-600 text-white px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-xl shadow-indigo-500/20 flex items-center gap-2"
+                        >
+                            {exporting ? <Zap className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+                            {exporting ? "Generating..." : "Export PDF"}
                         </button>
                     </div>
                 </div>
@@ -150,17 +228,33 @@ export default function DashboardPage() {
                         <div className="flex justify-between items-center mb-10 relative z-10">
                             <div>
                                 <h3 className="text-2xl font-black text-white italic uppercase tracking-tighter">Sentiment Analysis</h3>
-                                <p className="text-xs text-muted-foreground font-bold mt-1">Growth of positive customer experience (Last 7 Days)</p>
+                                <p className="text-xs text-muted-foreground font-bold mt-1">Growth of positive customer experience ({timeframe === 'daily' ? 'Last 7 Days' : 'Last 4 Weeks'})</p>
                             </div>
                             <div className="flex gap-4 p-1 glass bg-white/5 rounded-xl border-white/5">
-                                <button className="px-4 py-1.5 text-[9px] font-black uppercase tracking-widest bg-white/10 text-white rounded-lg transition-all">Daily</button>
-                                <button className="px-4 py-1.5 text-[9px] font-black uppercase tracking-widest text-muted-foreground hover:text-white transition-all">Weekly</button>
+                                <button
+                                    onClick={() => setTimeframe("daily")}
+                                    className={cn(
+                                        "px-4 py-1.5 text-[9px] font-black uppercase tracking-widest rounded-lg transition-all",
+                                        timeframe === "daily" ? "bg-white/10 text-white" : "text-muted-foreground hover:text-white"
+                                    )}
+                                >
+                                    Daily
+                                </button>
+                                <button
+                                    onClick={() => setTimeframe("weekly")}
+                                    className={cn(
+                                        "px-4 py-1.5 text-[9px] font-black uppercase tracking-widest rounded-lg transition-all",
+                                        timeframe === "weekly" ? "bg-white/10 text-white" : "text-muted-foreground hover:text-white"
+                                    )}
+                                >
+                                    Weekly
+                                </button>
                             </div>
                         </div>
 
                         <div className="h-[300px] w-full relative z-10">
                             <ResponsiveContainer width="100%" height="100%">
-                                <AreaChart data={sentimentData}>
+                                <AreaChart data={timeframe === 'daily' ? sentimentDataDaily : sentimentDataWeekly}>
                                     <defs>
                                         <linearGradient id="colorPos" x1="0" y1="0" x2="0" y2="1">
                                             <stop offset="5%" stopColor="#818cf8" stopOpacity={0.3} />
@@ -188,6 +282,7 @@ export default function DashboardPage() {
                                             backdropFilter: 'blur(12px)',
                                             padding: '20px'
                                         }}
+                                        itemStyle={{ color: '#fff', fontStyle: 'italic', fontWeight: 600 }}
                                         labelStyle={{ color: '#818cf8', fontWeight: 900, marginBottom: '10px', textTransform: 'uppercase' }}
                                     />
                                     <Area
@@ -324,8 +419,8 @@ export default function DashboardPage() {
                 <div className="py-6 flex justify-between items-center text-[10px] font-black text-muted-foreground uppercase tracking-widest border-t border-white/5">
                     <p>© 2026 ReviewFlow Executive Suite</p>
                     <div className="flex gap-6">
-                        <span className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-indigo-500" /> Supabase Connected</span>
-                        <span className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-purple-500" /> AI Agent Ready</span>
+                        <span className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" /> Supabase Connected</span>
+                        <span className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.5)]" /> AI Agent Ready</span>
                     </div>
                 </div>
             </div>
