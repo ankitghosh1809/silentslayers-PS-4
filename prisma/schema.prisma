@@ -1,0 +1,100 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  ADMIN
+  BRANCH_MANAGER
+  STAFF
+}
+
+enum Sentiment {
+  POSITIVE
+  NEUTRAL
+  NEGATIVE
+}
+
+enum ReviewSource {
+  GOOGLE
+  ZOMATO
+  INTERNAL
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  password      String
+  role          Role      @default(STAFF)
+  branchId      String?
+  branch        Branch?   @relation(fields: [branchId], references: [id])
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Branch {
+  id            String    @id @default(cuid())
+  name          String
+  location      String
+  qrCodeUrl     String?
+  users         User[]
+  staff         Staff[]
+  reviews       Review[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Staff {
+  id            String    @id @default(cuid())
+  name          String
+  designation   String?
+  branchId      String
+  branch        Branch    @relation(fields: [branchId], references: [id])
+  reviews       Review[]  @relation("StaffReviews")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Review {
+  id                String       @id @default(cuid())
+  source            ReviewSource @default(INTERNAL)
+  externalId        String?      // ID from Google/Zomato
+  rating            Int
+  content           String
+  customerName      String?
+  customerEmail     String?
+  
+  // AI Enriched Data
+  sentiment         Sentiment?
+  categories        String[]     // food, service, ambience, etc.
+  urgencyScore      Int?         // 1-10
+  aiReplySuggestion String?
+  
+  branchId          String
+  branch            Branch       @relation(fields: [branchId], references: [id])
+  
+  staffId           String?
+  staff             Staff?       @relation("StaffReviews", fields: [staffId], references: [id])
+  
+  response          Response?
+  
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+}
+
+model Response {
+  id          String   @id @default(cuid())
+  content     String
+  reviewId    String   @unique
+  review      Review   @relation(fields: [reviewId], references: [id])
+  respondedBy String?
+  isPublished Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
