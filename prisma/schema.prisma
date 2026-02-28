@@ -24,6 +24,14 @@ enum ReviewSource {
   GOOGLE
   ZOMATO
   INTERNAL
+  SWIGGY
+  DINE_IN_QR
+}
+
+enum EscalationStatus {
+  PENDING
+  IN_PROGRESS
+  RESOLVED
 }
 
 model User {
@@ -46,6 +54,7 @@ model Branch {
   users         User[]
   staff         Staff[]
   reviews       Review[]
+  benchmarks    CompetitorBenchmark[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
@@ -64,7 +73,7 @@ model Staff {
 model Review {
   id                String       @id @default(cuid())
   source            ReviewSource @default(INTERNAL)
-  externalId        String?      // ID from Google/Zomato
+  externalId        String?      // ID from Google/Zomato/Swiggy
   rating            Int
   content           String
   customerName      String?
@@ -75,6 +84,7 @@ model Review {
   categories        String[]     // food, service, ambience, etc.
   urgencyScore      Int?         // 1-10
   aiReplySuggestion String?
+  staffMentions     String[]     // Names extracted by AI
   
   branchId          String
   branch            Branch       @relation(fields: [branchId], references: [id])
@@ -82,10 +92,23 @@ model Review {
   staffId           String?
   staff             Staff?       @relation("StaffReviews", fields: [staffId], references: [id])
   
+  escalation        Escalation?
   response          Response?
   
   createdAt         DateTime     @default(now())
   updatedAt         DateTime     @updatedAt
+}
+
+model Escalation {
+  id          String           @id @default(cuid())
+  status      EscalationStatus @default(PENDING)
+  priority    String           // HIGH, MEDIUM, LOW
+  notes       String?
+  assignedTo  String?          // Manager Name
+  reviewId    String           @unique
+  review      Review           @relation(fields: [reviewId], references: [id])
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
 }
 
 model Response {
@@ -97,4 +120,18 @@ model Response {
   isPublished Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model CompetitorBenchmark {
+  id          String   @id @default(cuid())
+  branchId    String
+  branch      Branch   @relation(fields: [branchId], references: [id])
+  food        Float
+  service     Float
+  ambience    Float
+  value       Float
+  cleanliness Float
+  isCompetitor Boolean @default(false)
+  period      String   // Last 7 days, Last 30 days
+  createdAt   DateTime @default(now())
 }
