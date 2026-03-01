@@ -1,7 +1,7 @@
 # ReviewFlow AI — Deployment Automation
 # This script handles the execution policy and triggers the Vercel deployment.
 
-Write-Host "🚀 Initializing ReviewFlow AI Deployment..." -ForegroundColor Indigo
+Write-Host "🚀 Initializing ReviewFlow AI Deployment..." -ForegroundColor Blue
 
 # 1. Ensure Vercel CLI is present
 if (!(Get-Command npx -ErrorAction SilentlyContinue)) {

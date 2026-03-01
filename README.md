@@ -1,5 +1,16 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Deployment
+
+The app is optimized for Vercel.
+
+**IMPORTANT: Environment variables**
+In Vercel → Settings → Environment Variables → Add `GEMINI_API_KEY` with your Google Gemini API key.
+
+```bash
+.\deploy.ps1
+```
+
 ## Getting Started
 
 First, run the development server:

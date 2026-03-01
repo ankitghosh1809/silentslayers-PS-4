@@ -38,18 +38,20 @@ export default function LoginPage() {
     const [loading, setLoading] = useState(false);
     const [booting, setBooting] = useState(false);
     const router = useRouter();
-
     const containerRef = useRef(null);
-    const { scrollYProgress } = useScroll({
-        target: containerRef,
-        offset: ["start start", "end end"]
-    });
+
+    useEffect(() => {
+        const session = localStorage.getItem("reviewflow_session");
+        if (session) {
+            router.push("/dashboard");
+        }
+    }, [router]);
 
     const handleEmailLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         try {
-            // Simulated login for demo
+            localStorage.setItem("reviewflow_session", JSON.stringify({ email, businessName, timestamp: Date.now() }));
             triggerBootingSequence();
         } catch (error) {
             console.error(error);
@@ -96,7 +98,7 @@ export default function LoginPage() {
                             />
                         </div>
 
-                        <p className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.4em] animate-pulse">Initializing ReviewFlow Intelligence...</p>
+                        <p className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.4em] animate-pulse">Authenticating & Preparing Dashboard...</p>
                     </motion.div>
                 )}
             </AnimatePresence>

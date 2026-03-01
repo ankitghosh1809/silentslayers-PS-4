@@ -48,7 +48,7 @@ export default function LandingPage() {
         <div className="hidden md:flex items-center gap-8 text-sm font-bold text-muted-foreground">
           <Link href="#features" className="hover:text-indigo-400 transition-colors uppercase tracking-widest">Features</Link>
           <Link href="#demo" className="hover:text-indigo-400 transition-colors uppercase tracking-widest">Demo</Link>
-          <Link href="/dashboard" className="glass px-6 py-2.5 rounded-xl text-white hover:bg-white/10 transition-all border-white/10 uppercase tracking-widest font-black">Login</Link>
+          <Link href="/loading-sequence" className="glass px-6 py-2.5 rounded-xl text-white hover:bg-white/10 transition-all border-white/10 uppercase tracking-widest font-black">Login</Link>
         </div>
       </nav>
 
@@ -69,7 +69,7 @@ export default function LandingPage() {
             <span>AI-Powered Reputation Intelligence</span>
           </motion.div>
 
-          <h1 className="text-7xl md:text-9xl font-black tracking-tighter text-white mb-8 leading-[0.85] uppercase italic">
+          <h1 className="text-5xl sm:text-7xl md:text-9xl font-black tracking-tighter text-white mb-8 leading-[0.85] uppercase italic">
             Turn Feedback <br />
             <span className="gradient-text">Into Intelligence.</span>
           </h1>
@@ -81,7 +81,7 @@ export default function LandingPage() {
 
           <div className="flex flex-wrap justify-center gap-6">
             <Link
-              href="/dashboard"
+              href="/loading-sequence"
               className="bg-gradient-to-tr from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white px-10 py-5 rounded-[2rem] font-black text-lg flex items-center transition-all shadow-2xl shadow-indigo-500/40 group uppercase italic tracking-widest"
             >
               See It In Action
@@ -171,7 +171,7 @@ export default function LandingPage() {
           <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/20 blur-[100px]" />
           <h2 className="text-5xl md:text-6xl font-black text-white italic tracking-tighter uppercase mb-8">Ready to Own Your <br /> Reputation?</h2>
           <Link
-            href="/dashboard"
+            href="/loading-sequence"
             className="bg-white text-slate-950 px-12 py-5 rounded-[2rem] font-black text-xl transition-all inline-block hover:scale-105 active:scale-95 shadow-2xl shadow-white/10 uppercase italic"
           >
             Launch Final Demo

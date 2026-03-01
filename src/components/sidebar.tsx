@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
     LayoutDashboard,
     MessageSquare,
@@ -12,19 +13,25 @@ import {
     Globe,
     Sparkles,
     Building2,
-    ChevronRight,
     LogOut,
-    Bell
+    X
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "./auth-provider";
+import { AccountModal } from "./account-modal";
 
-export function Sidebar() {
+interface SidebarProps {
+    isOpen?: boolean;
+    onClose?: () => void;
+}
+
+export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
     const pathname = usePathname();
     const { role, businessName, logout } = useAuth();
+    const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
 
     const navItems = [
         { label: "Dashboard", id: "dashboard", icon: LayoutDashboard, href: "/dashboard" },
@@ -56,90 +63,133 @@ export function Sidebar() {
     ];
 
     return (
-        <div className="w-80 h-[calc(100vh-2rem)] glass rounded-[3rem] p-8 flex flex-col border-white/5 shadow-2xl relative overflow-hidden shrink-0">
-            {/* Glossy Logo */}
-            <Link href="/dashboard" className="flex items-center gap-3 mb-12 group">
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:scale-110 transition-transform">
-                    <Zap className="w-7 h-7 text-white fill-white/20" />
-                </div>
-                <div className="flex flex-col">
-                    <span className="text-2xl font-black text-white italic tracking-tighter leading-none italic">ReviewFlow</span>
-                    <span className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mt-1 truncate max-w-[150px]">{businessName || "Enterprise Suite"}</span>
-                </div>
-            </Link>
+        <>
+            {/* Mobile Overlay */}
+            <AnimatePresence>
+                {isOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={onClose}
+                        className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-40 lg:hidden"
+                    />
+                )}
+            </AnimatePresence>
 
-            {/* Navigation */}
-            <nav className="flex-1 space-y-10 overflow-y-auto no-scrollbar pr-2">
-                {navGroups.map((group) => group.items.length > 0 && (
-                    <div key={group.label} className="space-y-4">
-                        <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em] pl-4">{group.label}</h3>
-                        <div className="space-y-1">
-                            {group.items.map((item) => (
-                                <Link
-                                    key={item.href}
-                                    href={item.href}
-                                    className={cn(
-                                        "flex items-center justify-between px-4 py-4 rounded-2xl transition-all duration-300 group",
-                                        pathname === item.href
-                                            ? "bg-indigo-600 text-white shadow-xl shadow-indigo-500/20"
-                                            : "text-muted-foreground hover:text-white hover:bg-white/5"
-                                    )}
-                                >
-                                    <div className="flex items-center gap-4">
-                                        <item.icon className={cn(
-                                            "w-5 h-5 transition-transform group-hover:scale-110",
-                                            pathname === item.href ? "text-white" : "text-indigo-400"
-                                        )} />
-                                        <span className="text-[11px] font-black uppercase tracking-widest italic">{item.label}</span>
-                                    </div>
-                                    {item.chip && (
-                                        <span className="px-2 py-0.5 rounded-full bg-indigo-400/20 text-indigo-300 text-[8px] font-black uppercase tracking-tighter animate-pulse border border-indigo-500/30">
-                                            {item.chip}
-                                        </span>
-                                    )}
-                                </Link>
-                            ))}
-                        </div>
-                    </div>
-                ))}
-            </nav>
-
-            {/* Profile & Settings Area */}
-            <div className="mt-10 pt-8 border-t border-white/5 space-y-6">
-                <Link
-                    href="/settings"
-                    className={cn(
-                        "flex items-center gap-4 px-4 py-4 rounded-2xl transition-all group",
-                        pathname === "/settings" ? "bg-white/10 text-white" : "text-muted-foreground hover:text-white"
-                    )}
+            <div className={cn(
+                "fixed lg:relative z-50 lg:z-0 w-80 h-[calc(100vh-2rem)] glass rounded-[3rem] p-8 flex flex-col border-white/5 shadow-2xl overflow-hidden shrink-0 transition-all duration-300 ease-in-out",
+                isOpen ? "translate-x-0 opacity-100" : "-translate-x-full lg:translate-x-0 opacity-0 lg:opacity-100 lg:flex",
+                !isOpen && "hidden lg:flex"
+            )}>
+                {/* Close Button (Mobile Only) */}
+                <button
+                    onClick={onClose}
+                    className="lg:hidden absolute top-8 right-8 p-2 hover:bg-white/5 rounded-full transition-all"
                 >
-                    <Settings className="w-5 h-5 text-indigo-400 group-hover:rotate-45 transition-transform" />
-                    <span className="text-[11px] font-black uppercase tracking-widest italic">Settings</span>
+                    <X className="w-6 h-6 text-muted-foreground" />
+                </button>
+
+                {/* Glossy Logo */}
+                <Link href="/dashboard" className="flex items-center gap-3 mb-12 group">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:scale-110 transition-transform">
+                        <Zap className="w-7 h-7 text-white fill-white/20" />
+                    </div>
+                    <div className="flex flex-col">
+                        <span className="text-2xl font-black text-white italic tracking-tighter leading-none italic">ReviewFlow</span>
+                        <span className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mt-1 truncate max-w-[150px]">{businessName || "Enterprise Suite"}</span>
+                    </div>
                 </Link>
 
-                <div className="p-1 glass bg-white/5 rounded-[2.5rem] border-white/5">
-                    <div className="p-4 flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-slate-800 to-slate-900 border border-white/10 flex items-center justify-center text-xl font-black text-white italic">
-                                {role[0]}
-                            </div>
-                            <div className="flex flex-col">
-                                <span className="text-xs font-black text-white uppercase italic">{role}</span>
-                                <span className="text-[9px] font-bold text-indigo-400 uppercase tracking-tighter">Premium Cluster</span>
+                {/* Navigation */}
+                <nav className="flex-1 space-y-10 overflow-y-auto no-scrollbar pr-2">
+                    {navGroups.map((group) => group.items.length > 0 && (
+                        <div key={group.label} className="space-y-4">
+                            <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em] pl-4">{group.label}</h3>
+                            <div className="space-y-1">
+                                {group.items.map((item) => (
+                                    <Link
+                                        key={item.href}
+                                        href={item.href}
+                                        onClick={onClose}
+                                        className={cn(
+                                            "flex items-center justify-between px-4 py-4 rounded-2xl transition-all duration-300 group",
+                                            pathname === item.href
+                                                ? "bg-indigo-600 text-white shadow-xl shadow-indigo-500/20"
+                                                : "text-muted-foreground hover:text-white hover:bg-white/5"
+                                        )}
+                                    >
+                                        <div className="flex items-center gap-4">
+                                            <item.icon className={cn(
+                                                "w-5 h-5 transition-transform group-hover:scale-110",
+                                                pathname === item.href ? "text-white" : "text-indigo-400"
+                                            )} />
+                                            <span className="text-[11px] font-black uppercase tracking-widest italic">{item.label}</span>
+                                        </div>
+                                        {item.chip && (
+                                            <span className="px-2 py-0.5 rounded-full bg-indigo-400/20 text-indigo-300 text-[8px] font-black uppercase tracking-tighter animate-pulse border border-indigo-500/30">
+                                                {item.chip}
+                                            </span>
+                                        )}
+                                    </Link>
+                                ))}
                             </div>
                         </div>
-                        <button
-                            onClick={logout}
-                            className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-rose-500/20 group transition-all"
-                        >
-                            <LogOut className="w-4 h-4 text-muted-foreground group-hover:text-rose-500" />
-                        </button>
+                    ))}
+                </nav>
+
+                {/* Profile & Settings Area */}
+                <div className="mt-10 pt-8 border-t border-white/5 space-y-6">
+                    <Link
+                        href="/settings"
+                        onClick={onClose}
+                        className={cn(
+                            "flex items-center gap-4 px-4 py-4 rounded-2xl transition-all group",
+                            pathname === "/settings" ? "bg-white/10 text-white" : "text-muted-foreground hover:text-white"
+                        )}
+                    >
+                        <Settings className="w-5 h-5 text-indigo-400 group-hover:rotate-45 transition-transform" />
+                        <span className="text-[11px] font-black uppercase tracking-widest italic">Settings</span>
+                    </Link>
+
+                    <div className="p-1 glass bg-white/5 rounded-[2.5rem] border-white/5">
+                        <div className="p-4 flex items-center justify-between">
+                            <button
+                                onClick={() => {
+                                    setIsAccountModalOpen(true);
+                                    if (onClose) onClose();
+                                }}
+                                className="flex items-center gap-4 text-left group/profile"
+                            >
+                                <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-slate-800 to-slate-900 border border-white/10 flex items-center justify-center text-xl font-black text-white italic group-hover/profile:scale-105 transition-transform">
+                                    {role ? role[0] : 'U'}
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="text-xs font-black text-white uppercase italic group-hover/profile:text-indigo-400 transition-colors">Manage Account</span>
+                                    <span className="text-[9px] font-bold text-indigo-400 uppercase tracking-tighter">{role || "Premium User"}</span>
+                                </div>
+                            </button>
+                            <button
+                                onClick={async () => {
+                                    localStorage.removeItem("reviewflow_session");
+                                    await logout();
+                                }}
+                                className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-rose-500/20 group/logout transition-all"
+                            >
+                                <LogOut className="w-4 h-4 text-muted-foreground group-hover/logout:text-rose-500" />
+                            </button>
+                        </div>
                     </div>
                 </div>
+
+                {/* Glossy Overlay Decor */}
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent opacity-30" />
             </div>
 
-            {/* Glossy Overlay Decor */}
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent opacity-30" />
-        </div>
+            <AccountModal
+                isOpen={isAccountModalOpen}
+                onClose={() => setIsAccountModalOpen(false)}
+            />
+        </>
     );
 }
